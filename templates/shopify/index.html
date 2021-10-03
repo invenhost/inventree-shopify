@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<h3>{{products|length}} Products: </h3>
+<ul>
+    {% for p in products %}
+    <li>
+    <h4>{{p.title}}|{{p.vendor}} <span>{{p.product_type}}</span></h4>
+    <p>{{p.body_html}}</p>
+    <p>{{p.variants|length}} variants:<br>
+        {% for var in p.variants %}
+            {{var.title}}({{var.sku}}) - {{var.price}}<br>
+        {% endfor %}
+
+    </p>
+    </li>
+    {% endfor %}
+</ul>
+
+<h3>{{levles|length}} Levels: </h3>
+<ul>
+    {% for l in levles %}
+    <li>
+        <a href="{% url 'plugin:ShopifyIntegrationPlugin:increase-level' '1' %}">{{l.inventory_item_id}} - {{l.available}}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

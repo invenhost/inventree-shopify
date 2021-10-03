@@ -1,0 +1,1 @@
+from .ShopifyIntegration import ShopifyIntegrationPlugin
