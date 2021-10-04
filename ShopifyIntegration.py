@@ -18,6 +18,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     PLUGIN_TITLE = "Shopify App"
 
     NAVIGATION_TAB_NAME = "Shopify"
+    NAVIGATION_TAB_ICON = 'fab fa-shopify'
 
     SHOPIFY_API_VERSION = '2021-07'
 
