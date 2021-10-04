@@ -15,6 +15,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     """
     PLUGIN_NAME = "ShopifyIntegrationPlugin"
     PLUGIN_SLUG = "shopify"
+    PLUGIN_TITLE = "Shopify App"
 
     SHOPIFY_API_VERSION = '2021-07'
 
