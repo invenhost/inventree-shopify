@@ -41,8 +41,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             endpoint = f'{name}.json'
         if arguments:
             endpoint += self.build_url_args(arguments)
-        api_url = f'{self.endpoint_url}/{endpoint}'
-        response = requests.get(api_url)
+        response = requests.get(f'{self.endpoint_url}/{endpoint}')
         return response.json()[name]
 
     # region views
