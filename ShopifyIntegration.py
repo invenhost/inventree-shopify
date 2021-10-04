@@ -14,6 +14,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     Sample integration plugin for shopify
     """
     PLUGIN_NAME = "ShopifyIntegrationPlugin"
+    PLUGIN_SLUG = "shopify"
 
     SHOPIFY_API_VERSION = '2021-07'
 
@@ -88,5 +89,5 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     }
 
     NAVIGATION = [
-        {'name': 'Product overview', 'link': 'plugin:ShopifyIntegrationPlugin:index'},
+        {'name': 'Product overview', 'link': 'plugin:shopify:index'},
     ]
