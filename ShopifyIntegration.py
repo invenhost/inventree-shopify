@@ -81,17 +81,17 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     SETTINGS = {
         'API_KEY': {
             'name': _('API Key'),
-            'description': _('Enable PO functionality in InvenTree interface'),
+            'description': _('API-key for your private app'),
             'default': 'a key',
         },
         'API_SHARED': {
-            'name': _('API Shared'),
-            'description': _('Enable PO functionality in InvenTree interface'),
+            'name': _('API Passwort'),
+            'description': _('API-password for your private app'),
             'default': 'shared path',
         },
         'SHOP_URL': {
             'name': _('Shop url'),
-            'description': _('Enable PO functionality in InvenTree interface'),
+            'description': _('URL for your shop instance'),
             'default': 'test.myshopify.com',
         },
     }
