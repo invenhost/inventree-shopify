@@ -13,6 +13,9 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     """
     Sample integration plugin for shopify
     """
+    AUTHOR = "Matthias J Mair"
+    PUBLISH_DATE = "1212-12-12"
+
     PLUGIN_NAME = "ShopifyIntegrationPlugin"
     PLUGIN_SLUG = "shopify"
     PLUGIN_TITLE = "Shopify App"
