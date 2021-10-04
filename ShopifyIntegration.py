@@ -44,6 +44,14 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         response = requests.get(f'{self.endpoint_url}/{endpoint}')
         return response.json()[name]
 
+    def post_api(self, name=None, endpoint=None, arguments=None, data=None):
+        if endpoint is None:
+            endpoint = f'{name}.json'
+        if arguments:
+            endpoint += self.build_url_args(arguments)
+        response = requests.post(f'{self.endpoint_url}/{endpoint}', data)
+        return response.json()
+
     # region views
     def view_index(self, request):
         """a basic overview"""
