@@ -15,6 +15,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     """
     AUTHOR = "Matthias J Mair"
     PUBLISH_DATE = "1212-12-12"
+    VERSION = "0.0.1"
 
     PLUGIN_NAME = "ShopifyIntegrationPlugin"
     PLUGIN_SLUG = "shopify"
