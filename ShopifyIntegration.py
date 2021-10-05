@@ -34,7 +34,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
 
     @property
     def api_headers(self):
-        return {'X-Shopify-Access-Token': self.get_setting("API_SHARED"), 'Content-Type': 'application/json'}
+        return {'X-Shopify-Access-Token': self.get_setting("API_PASSWORD"), 'Content-Type': 'application/json'}
 
     def build_url_args(self, arguments):
         groups = []
@@ -42,29 +42,31 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             groups.append(f'{key}={",".join([str(a) for a in val])}')
         return f'?{"&".join(groups)}'
 
-    def get_api_response(self, name, endpoint=None, arguments=None):
+    def api_call(self, name=None, endpoint=None, arguments=None, data=None, get:bool = True):
         if endpoint is None:
             endpoint = f'{name}.json'
         if arguments:
             endpoint += self.build_url_args(arguments)
-        response = requests.get(f'{self.endpoint_url}/{endpoint}', headers=self.api_headers)
-        return response.json()[name]
 
-    def post_api(self, name=None, endpoint=None, arguments=None, data=None):
-        if endpoint is None:
-            endpoint = f'{name}.json'
-        if arguments:
-            endpoint += self.build_url_args(arguments)
-        response = requests.post(f'{self.endpoint_url}/{endpoint}', data=json.dumps(data), headers=self.api_headers)
+        kwargs = {
+            'url': f'{self.endpoint_url}/{endpoint}',
+            'headers': self.api_headers,
+        }
+        if data:
+            kwargs['data'] = json.dumps(data)
+
+        response = requests.get(**kwargs) if get else requests.post(**kwargs)
+        if name:
+            return response.json()[name]
         return response.json()
 
     # region views
     def view_index(self, request):
         """a basic overview"""
-        products = self.get_api_response('products')
+        products = self.api_call('products')
         variant_ids = []
         [[variant_ids.append(v['inventory_item_id']) for v in p['variants']] for p in products]
-        levels = self.get_api_response('inventory_levels', arguments={'inventory_item_ids': variant_ids})
+        levels = self.api_call('inventory_levels', arguments={'inventory_item_ids': variant_ids})
         context = {
             'products': products,
             'levles': levels,
@@ -84,14 +86,16 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             form = IncreaseForm(request.POST)
 
             if form.is_valid():
-                data = form.cleaned_data
-                post_data = {
-                    "location_id": int(location),
-                    "inventory_item_id": int(pk),
-                    "available": int(data['amount'])
-                }
                 # increase stock
-                response = self.post_api(endpoint='inventory_levels/set.json', data=post_data)
+                response = self.api_call(
+                    endpoint='inventory_levels/set.json',
+                    data={
+                        "location_id": location,
+                        "inventory_item_id": pk,
+                        "available": form.cleaned_data['amount']
+                    },
+                    get=False
+                )
                 if 'inventory_level' in response:
                     return redirect(f'{self.internal_name}index')
                 context['error'] = _('API call was not sucessfull')
@@ -112,7 +116,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             'description': _('API-key for your private app'),
             'default': 'a key',
         },
-        'API_SHARED': {
+        'API_PASSWORD': {
             'name': _('API Passwort'),
             'description': _('API-password for your private app'),
             'default': 'shared path',
