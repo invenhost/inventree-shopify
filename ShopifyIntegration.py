@@ -1,9 +1,11 @@
 """sample implementations for IntegrationPlugin"""
+from django.http.response import JsonResponse
 import requests
+import json
 
 from django.utils.translation import ugettext_lazy as _
 from django.conf.urls import url
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django import forms
 
 from plugins.integration import AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, IntegrationPluginBase
@@ -28,7 +30,11 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
 
     @property
     def endpoint_url(self):
-        return f'https://{self.get_setting("API_KEY")}:{self.get_setting("API_SHARED")}@{self.get_setting("SHOP_URL")}/admin/api/{self.SHOPIFY_API_VERSION}'
+        return f'https://{self.get_setting("SHOP_URL")}/admin/api/{self.SHOPIFY_API_VERSION}'
+
+    @property
+    def api_headers(self):
+        return {'X-Shopify-Access-Token': self.get_setting("API_SHARED"), 'Content-Type': 'application/json'}
 
     def build_url_args(self, arguments):
         groups = []
@@ -41,7 +47,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             endpoint = f'{name}.json'
         if arguments:
             endpoint += self.build_url_args(arguments)
-        response = requests.get(f'{self.endpoint_url}/{endpoint}')
+        response = requests.get(f'{self.endpoint_url}/{endpoint}', headers=self.api_headers)
         return response.json()[name]
 
     def post_api(self, name=None, endpoint=None, arguments=None, data=None):
@@ -49,7 +55,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             endpoint = f'{name}.json'
         if arguments:
             endpoint += self.build_url_args(arguments)
-        response = requests.post(f'{self.endpoint_url}/{endpoint}', data)
+        response = requests.post(f'{self.endpoint_url}/{endpoint}', data=json.dumps(data), headers=self.api_headers)
         return response.json()
 
     # region views
@@ -65,23 +71,38 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         }
         return render(request, 'shopify/index.html', context)
 
-    def view_increase(self, request, pk):
+    def view_increase(self, request, pk, location):
         """a basic overview"""
         class IncreaseForm(forms.Form):
-            pk_inp = forms.CharField(initial=pk, widget=forms.HiddenInput())
             amount = forms.IntegerField(required=True, help_text=_('How much should the level in- / decreased?'))
+
+        context = {'pk': pk, }
 
         if request.method == 'GET':
             form = IncreaseForm()
         else:
             form = IncreaseForm(request.POST)
 
-        return render(request, 'shopify/increase.html', {'pk': pk, 'form': form})
+            if form.is_valid():
+                data = form.cleaned_data
+                post_data = {
+                    "location_id": int(location),
+                    "inventory_item_id": int(pk),
+                    "available": int(data['amount'])
+                }
+                # increase stock
+                response = self.post_api(endpoint='inventory_levels/set.json', data=post_data)
+                if 'inventory_level' in response:
+                    return redirect(f'{self.internal_name}index')
+                context['error'] = _('API call was not sucessfull')
+
+        context['form'] = form
+        return render(request, 'shopify/increase.html', context)
     # endregion
 
     def setup_urls(self):
         return [
-            url(r'increase/(?P<pk>\d+)/', self.view_increase, name='increase-level'),
+            url(r'increase/(?P<location>\d+)/(?P<pk>\d+)/', self.view_increase, name='increase-level'),
             url(r'^', self.view_index, name='index'),
         ]
 

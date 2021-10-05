@@ -3,6 +3,7 @@
 
 {% block content %}
 <h3>Change level for {{pk}}</h3>
+{% if error %}<p>{{ error }}</p>{% endif %}
 <form action="" method="post">
     {% csrf_token %}
     {{ form }}

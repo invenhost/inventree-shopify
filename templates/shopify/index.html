@@ -22,7 +22,7 @@
 <ul>
     {% for l in levles %}
     <li>
-        <a href="{% url 'plugin:ShopifyIntegrationPlugin:increase-level' '1' %}">{{l.inventory_item_id}} - {{l.available}}</a>
+        <a href="{% url 'plugin:shopify:increase-level' l.location_id l.inventory_item_id %}">{{l.inventory_item_id}} - {{l.available}}</a>
     </li>
     {% endfor %}
 </ul>
