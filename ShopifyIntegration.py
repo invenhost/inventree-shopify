@@ -69,7 +69,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         levels = self.api_call('inventory_levels', arguments={'inventory_item_ids': variant_ids})
         context = {
             'products': products,
-            'levles': levels,
+            'levels': levels,
         }
         return render(request, 'shopify/index.html', context)
 

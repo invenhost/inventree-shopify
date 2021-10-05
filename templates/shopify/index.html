@@ -18,9 +18,9 @@
     {% endfor %}
 </ul>
 
-<h3>{{levles|length}} Levels: </h3>
+<h3>{{levles|length}} Inventory-Levels: </h3>
 <ul>
-    {% for l in levles %}
+    {% for l in levels %}
     <li>
         <a href="{% url 'plugin:shopify:increase-level' l.location_id l.inventory_item_id %}">{{l.inventory_item_id}} - {{l.available}}</a>
     </li>
