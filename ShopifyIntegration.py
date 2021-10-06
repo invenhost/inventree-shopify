@@ -77,7 +77,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     def view_increase(self, request, pk, location):
         """a basic overview"""
         class IncreaseForm(forms.Form):
-            amount = forms.IntegerField(required=True, help_text=_('How much should the level in- / decreased?'))
+            amount = forms.IntegerField(required=True, help_text=_('New level for this level'))
 
         context = {'pk': pk, }
 
