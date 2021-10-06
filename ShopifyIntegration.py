@@ -103,7 +103,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
                 available=level.get('available'),
                 location_id=level.get('location_id'),
                 updated_at=datetime.datetime.fromisoformat(level.get('updated_at')),
-                variant=Variant.objects.get(inventory_item_id=level.get('inventory_item_id'))
+                variant_id=level.get('inventory_item_id')
             )
 
         context = {
