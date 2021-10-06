@@ -43,7 +43,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             groups.append(f'{key}={",".join([str(a) for a in val])}')
         return f'?{"&".join(groups)}'
 
-    def api_call(self, name=None, endpoint=None, arguments=None, data=None, get:bool = True):
+    def api_call(self, name=None, endpoint=None, arguments=None, data=None, get: bool = True):
         if endpoint is None:
             endpoint = f'{name}.json'
         if arguments:
