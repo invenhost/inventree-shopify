@@ -1,24 +1,25 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 
 {% block content %}
-<h3>{{products|length}} Products: </h3>
-<ul>
+<h3>{% blocktrans with lgt=products|length %}{{lgt}} Products:{% endblocktrans %}</h3>
+<div class="card-group">
     {% for p in products %}
-    <li>
-    <h4>{{p.title}}|{{p.vendor}} <span>{{p.product_type}}</span></h4>
-    <p>{{p.body_html}}</p>
-    <p>{{p.variants|length}} variants:<br>
-        {% for var in p.variants %}
-            {{var.title}}({{var.sku}}) - {{var.price}}<br>
-        {% endfor %}
-
-    </p>
-    </li>
+    <div class="card">
+        <h5 class="card-title">{{p.title}}</h5>
+        <p class="card-text"><small class="text-muted">{{p.vendor}} - {{p.product_type}}</small></p>
+        <p class="card-text">{{p.body_html}}</p>
+        <p>{% for var in p.variants %}
+           {{var.title}}({{var.sku}}) - {{var.price}}<br>
+           {% endfor %}
+        </p>
+        <p class="card-text"><small class="text-muted">{% blocktrans with by=p.vendor typ=p.product_type %}by {{by}} - in the category {{typ}}{% endblocktrans %}</small></p>
+      </div>
     {% endfor %}
-</ul>
+</div>
 
-<h3>{{levels|length}} Inventory-Levels: </h3>
+<h3>{% blocktrans with lgt=levels|length %}{{lgt}} Inventory-Levels:{% endblocktrans %}</h3>
 <ul>
     {% for l in levels %}
     <li>
