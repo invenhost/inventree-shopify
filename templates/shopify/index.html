@@ -10,7 +10,7 @@
         <h5 class="card-title">{{p.title}}</h5>
         <p class="card-text"><small class="text-muted">{{p.vendor}} - {{p.product_type}}</small></p>
         <p class="card-text">{{p.body_html}}</p>
-        <p>{% for var in p.variants %}
+        <p>{% for var in p.variants.all %}
            {{var.title}}({{var.sku}}) - {{var.price}}<br>
            {% endfor %}
         </p>
@@ -23,7 +23,7 @@
 <ul>
     {% for l in levels %}
     <li>
-        <a href="{% url 'plugin:shopify:increase-level' l.location_id l.inventory_item_id %}">{{l.inventory_item_id}} - {{l.available}}</a>
+        <a href="{% url 'plugin:shopify:increase-level' l.location_id l.variant.inventory_item_id %}">{{l.variant.title}}({{l.variant.product.title}}): {{l.available}}</a>
     </li>
     {% endfor %}
 </ul>

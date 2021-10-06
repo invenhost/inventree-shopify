@@ -1,7 +1,7 @@
 """sample implementations for IntegrationPlugin"""
-from django.http.response import JsonResponse
 import requests
 import json
+import datetime
 
 from django.utils.translation import ugettext_lazy as _
 from django.conf.urls import url
@@ -64,13 +64,51 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     # region views
     def view_index(self, request):
         """a basic overview"""
+        from .models import Product, Variant, InventoryLevel
+
         products = self.api_call('products')
-        variant_ids = []
-        [[variant_ids.append(v['inventory_item_id']) for v in p['variants']] for p in products]
-        levels = self.api_call('inventory_levels', arguments={'inventory_item_ids': variant_ids})
+        # create products in db
+        for product in products:
+            Product.objects.update_or_create(
+                id=product.get('id'),
+                title=product.get('title'),
+                body_html=product.get('body_html'),
+                vendor=product.get('vendor'),
+                product_type=product.get('product_type'),
+                handle=product.get('handle'),
+                created_at=datetime.datetime.fromisoformat(product.get('created_at')),
+                updated_at=datetime.datetime.fromisoformat(product.get('updated_at')),
+                published_at=datetime.datetime.fromisoformat(product.get('published_at')),
+            )
+
+        # create variants in db
+        for p in products:
+            for variant in p['variants']:
+                Variant.objects.update_or_create(
+                    title=variant.get('title'),
+                    sku=variant.get('sku'),
+                    barcode=variant.get('barcode'),
+                    price=variant.get('price'),
+                    inventory_item_id=variant.get('inventory_item_id'),
+                    created_at=datetime.datetime.fromisoformat(variant.get('created_at')),
+                    updated_at=datetime.datetime.fromisoformat(variant.get('updated_at')),
+                    product_id=p.get('id')
+                )
+
+        levels = self.api_call('inventory_levels', arguments={'inventory_item_ids': [a.inventory_item_id for a in Variant.objects.all()]})
+
+        # create levels in db
+        for level in levels:
+            InventoryLevel.objects.update_or_create(
+                available=level.get('available'),
+                location_id=level.get('location_id'),
+                updated_at=datetime.datetime.fromisoformat(level.get('updated_at')),
+                variant=Variant.objects.get(inventory_item_id=level.get('inventory_item_id'))
+            )
+
         context = {
-            'products': products,
-            'levels': levels,
+            'products': Product.objects.all(),
+            'levels': InventoryLevel.objects.all(),
         }
         return render(request, 'shopify/index.html', context)
 
