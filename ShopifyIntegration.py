@@ -64,47 +64,54 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     # region views
     def view_index(self, request):
         """a basic overview"""
-        from .models import Product, Variant, InventoryLevel
+        from plugins.ShopifyIntegrationPlugin.models import Product, Variant, InventoryLevel
 
         products = self.api_call('products')
         # create products in db
         for product in products:
             Product.objects.update_or_create(
                 id=product.get('id'),
-                title=product.get('title'),
-                body_html=product.get('body_html'),
-                vendor=product.get('vendor'),
-                product_type=product.get('product_type'),
-                handle=product.get('handle'),
-                created_at=datetime.datetime.fromisoformat(product.get('created_at')),
-                updated_at=datetime.datetime.fromisoformat(product.get('updated_at')),
-                published_at=datetime.datetime.fromisoformat(product.get('published_at')),
+                defaults={
+                    'title':product.get('title'),
+                    'body_html':product.get('body_html'),
+                    'vendor':product.get('vendor'),
+                    'product_type':product.get('product_type'),
+                    'handle':product.get('handle'),
+                    'created_at':datetime.datetime.fromisoformat(product.get('created_at')),
+                    'updated_at':datetime.datetime.fromisoformat(product.get('updated_at')),
+                    'published_at':datetime.datetime.fromisoformat(product.get('published_at')),
+                }
             )
 
         # create variants in db
         for p in products:
-            for variant in p['variants']:
-                Variant.objects.update_or_create(
-                    title=variant.get('title'),
-                    sku=variant.get('sku'),
-                    barcode=variant.get('barcode'),
-                    price=variant.get('price'),
-                    inventory_item_id=variant.get('inventory_item_id'),
-                    created_at=datetime.datetime.fromisoformat(variant.get('created_at')),
-                    updated_at=datetime.datetime.fromisoformat(variant.get('updated_at')),
-                    product_id=p.get('id')
-                )
+            for var in p['variants']:
+                if not Variant.objects.filter(inventory_item_id=var.get('inventory_item_id')).exists():
+                    Variant.objects.create(
+                        inventory_item_id=var.get('inventory_item_id'),
+                        title=var.get('title'),
+                        sku=var.get('sku'),
+                        barcode=var.get('barcode'),
+                        price=var.get('price'),
+                        created_at=datetime.datetime.fromisoformat(var.get('created_at')),
+                        updated_at=datetime.datetime.fromisoformat(var.get('updated_at')),
+                        product_id=p.get('id'),
+                    )
 
         levels = self.api_call('inventory_levels', arguments={'inventory_item_ids': [a.inventory_item_id for a in Variant.objects.all()]})
 
         # create levels in db
         for level in levels:
-            InventoryLevel.objects.update_or_create(
-                available=level.get('available'),
+            lvl, _ = InventoryLevel.objects.get_or_create(
+                variant = Variant.objects.get(inventory_item_id=level.get('inventory_item_id')),
                 location_id=level.get('location_id'),
-                updated_at=datetime.datetime.fromisoformat(level.get('updated_at')),
-                variant_id=level.get('inventory_item_id')
+                defaults={
+                    'available':level.get('available'),
+                }
             )
+            lvl.updated_at = datetime.datetime.fromisoformat(level.get('updated_at'))
+            lvl.available = level.get('available')
+            lvl.save()
 
         context = {
             'products': Product.objects.all(),
