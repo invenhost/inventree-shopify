@@ -166,6 +166,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             'name': _('API Passwort'),
             'description': _('API password for your private app'),
             'default': 'a password',
+            'protected': True,
         },
         'SHOP_URL': {
             'name': _('Shop url'),
