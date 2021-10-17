@@ -159,13 +159,13 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     SETTINGS = {
         'API_KEY': {
             'name': _('API Key'),
-            'description': _('API-key for your private app'),
+            'description': _('API key for your private app'),
             'default': 'a key',
         },
         'API_PASSWORD': {
             'name': _('API Passwort'),
-            'description': _('API-password for your private app'),
-            'default': 'shared path',
+            'description': _('API password for your private app'),
+            'default': 'a password',
         },
         'SHOP_URL': {
             'name': _('Shop url'),
