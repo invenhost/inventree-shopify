@@ -164,7 +164,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
 
         webhook = ShopifyWebhook.objects.create(name='shopify inventory levels')
         answer_hook = f'https://{request.get_host()}/api/webhook/{webhook.endpoint_id}/'
-        self.api_call(
+        response = self.api_call(
             endpoint='webhooks.json',
             data={"webhook": {
                 "topic": "inventory_levels/update",
@@ -173,6 +173,8 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             }},
             get=False
         )
+        if not response.get('webhook', False):
+            raise KeyError(response)
         webhooks = self.api_call('webhooks')
         return HttpResponse(webhooks)
     # endregion
