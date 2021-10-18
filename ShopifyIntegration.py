@@ -163,8 +163,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         from plugins.ShopifyIntegrationPlugin.models import ShopifyWebhook
 
         webhook = ShopifyWebhook.objects.create(name='shopify inventory levels')
-        adress = 'efcc-93-82-117-194.ngrok.io'
-        answer_hook = f'https://{adress}/api/webhook/{webhook.endpoint_id}/'
+        answer_hook = f'https://{request.get_host()}/api/webhook/{webhook.endpoint_id}/'
         self.api_call(
             endpoint='webhooks.json',
             data={"webhook": {
