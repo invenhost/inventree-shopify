@@ -1,4 +1,5 @@
 """sample implementations for IntegrationPlugin"""
+from django.http.response import HttpResponse
 import requests
 import json
 import datetime
@@ -157,11 +158,30 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
 
         context['form'] = form
         return render(request, 'shopify/increase.html', context)
+    
+    def view_webhooks(self, request):
+        from plugins.ShopifyIntegrationPlugin.models import ShopifyWebhook
+
+        webhook = ShopifyWebhook.objects.create(name='shopify inventory levels')
+        adress = 'efcc-93-82-117-194.ngrok.io'
+        answer_hook = f'https://{adress}/api/webhook/{webhook.endpoint_id}/'
+        self.api_call(
+            endpoint='webhooks.json',
+            data={"webhook": {
+                "topic": "inventory_levels/update",
+                "address": answer_hook,
+                "format": "json",
+            }},
+            get=False
+        )
+        webhooks = self.api_call('webhooks')
+        return HttpResponse(webhooks)
     # endregion
 
     def setup_urls(self):
         return [
             url(r'increase/(?P<location>\d+)/(?P<pk>\d+)/', self.view_increase, name='increase-level'),
+            url(r'webhook/', self.view_webhooks, name='webhooks'),
             url(r'^', self.view_index, name='index'),
         ]
 
