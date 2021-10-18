@@ -57,14 +57,30 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             kwargs['data'] = json.dumps(data)
 
         response = requests.get(**kwargs) if get else requests.post(**kwargs)
-        if name:
-            return response.json()[name]
-        return response.json()
+        response_data = response.json()
+        if name in response_data.keys():
+            return response_data[name]
+        return response_data
 
-    # region views
-    def view_index(self, request):
-        """a basic overview"""
-        from plugins.ShopifyIntegrationPlugin.models import Product, Variant, InventoryLevel
+    def _fetch_levels(self):
+        from plugins.ShopifyIntegrationPlugin.models import Variant, InventoryLevel
+
+        levels = self.api_call('inventory_levels', arguments={'inventory_item_ids': [a.inventory_item_id for a in Variant.objects.all()]})
+        # create levels in db
+        for level in levels:
+            lvl, _ = InventoryLevel.objects.get_or_create(
+                variant=Variant.objects.get(inventory_item_id=level.get('inventory_item_id')),
+                location_id=level.get('location_id'),
+                defaults={
+                    'available': level.get('available'),
+                }
+            )
+            lvl.updated_at = datetime.datetime.fromisoformat(level.get('updated_at'))
+            lvl.available = level.get('available')
+            lvl.save()
+
+    def _fetch_products(self):
+        from plugins.ShopifyIntegrationPlugin.models import Product, Variant
 
         products = self.api_call('products')
         # create products in db
@@ -72,14 +88,14 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             Product.objects.update_or_create(
                 id=product.get('id'),
                 defaults={
-                    'title':product.get('title'),
-                    'body_html':product.get('body_html'),
-                    'vendor':product.get('vendor'),
-                    'product_type':product.get('product_type'),
-                    'handle':product.get('handle'),
-                    'created_at':datetime.datetime.fromisoformat(product.get('created_at')),
-                    'updated_at':datetime.datetime.fromisoformat(product.get('updated_at')),
-                    'published_at':datetime.datetime.fromisoformat(product.get('published_at')),
+                    'title': product.get('title'),
+                    'body_html': product.get('body_html'),
+                    'vendor': product.get('vendor'),
+                    'product_type': product.get('product_type'),
+                    'handle': product.get('handle'),
+                    'created_at': datetime.datetime.fromisoformat(product.get('created_at')),
+                    'updated_at': datetime.datetime.fromisoformat(product.get('updated_at')),
+                    'published_at': datetime.datetime.fromisoformat(product.get('published_at')),
                 }
             )
 
@@ -98,20 +114,13 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
                         product_id=p.get('id'),
                     )
 
-        levels = self.api_call('inventory_levels', arguments={'inventory_item_ids': [a.inventory_item_id for a in Variant.objects.all()]})
+    # region views
+    def view_index(self, request):
+        """a basic overview"""
+        from plugins.ShopifyIntegrationPlugin.models import Product, InventoryLevel
 
-        # create levels in db
-        for level in levels:
-            lvl, _ = InventoryLevel.objects.get_or_create(
-                variant = Variant.objects.get(inventory_item_id=level.get('inventory_item_id')),
-                location_id=level.get('location_id'),
-                defaults={
-                    'available':level.get('available'),
-                }
-            )
-            lvl.updated_at = datetime.datetime.fromisoformat(level.get('updated_at'))
-            lvl.available = level.get('available')
-            lvl.save()
+        self._fetch_products()
+        self._fetch_levels()
 
         context = {
             'products': Product.objects.all(),
