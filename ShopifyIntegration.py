@@ -160,23 +160,45 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         return render(request, 'shopify/increase.html', context)
     
     def view_webhooks(self, request):
+        context = {
+            'webhooks': self.webhook_check(request)
+        }
+        return render(request, 'shopify/webhooks.html', context)
+
+    def webhook_check(self, request):
+        target_topics = ['inventory_levels/update']
+        webhooks = self.api_call('webhooks')
+
+        webhooks_topics = [a.get('topic', '') for a in webhooks] if webhooks else []
+        host = request.get_host()
+        changed = False
+        for topic in target_topics:
+            if topic not in webhooks_topics:
+                self.webhook_create(host, topic)
+                changed = True
+
+        if changed:
+            return self.api_call('webhooks')
+        return webhooks
+
+    def webhook_create(self, hostname, topic):
         from plugins.ShopifyIntegrationPlugin.models import ShopifyWebhook
 
-        webhook = ShopifyWebhook.objects.create(name='shopify inventory levels')
-        answer_hook = f'https://{request.get_host()}/api/webhook/{webhook.endpoint_id}/'
+        webhook = ShopifyWebhook.objects.create(name=f'{self.slug}_{topic}')
         response = self.api_call(
             endpoint='webhooks.json',
             data={"webhook": {
-                "topic": "inventory_levels/update",
-                "address": answer_hook,
+                "topic": topic,
+                "address": f'https://{hostname}/api/webhook/{webhook.endpoint_id}/',
                 "format": "json",
             }},
             get=False
         )
         if not response.get('webhook', False):
             raise KeyError(response)
-        webhooks = self.api_call('webhooks')
-        return HttpResponse(webhooks)
+        webhook.shopify_webhook_id = response['webhook'].get('id', None)
+        webhook.save()
+        return True
     # endregion
 
     def setup_urls(self):
