@@ -174,7 +174,11 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
 
     def _webhook_check(self, host):
         # collect current hooks
-        target_topics = ['inventory_levels/update']
+        target_topics = [
+            'inventory_levels/update',
+            'orders/updated',
+            'orders/edited',
+        ]
         webhooks = self.api_call('webhooks')
 
         # process current hooks
