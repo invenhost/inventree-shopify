@@ -168,14 +168,16 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     
     def view_webhooks(self, request):
         context = {
-            'webhooks': self.webhook_check(request)
+            'webhooks': self._webhook_check(request.get_host())
         }
         return render(request, 'shopify/webhooks.html', context)
 
-    def webhook_check(self, request):
+    def _webhook_check(self, host):
+        # collect current hooks
         target_topics = ['inventory_levels/update']
         webhooks = self.api_call('webhooks')
 
+        # process current hooks
         webhooks_topics = []
         webhooks_wrong_hooks = []
         for item in webhooks:
@@ -190,16 +192,19 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         # delete hooks
         for item in webhooks_wrong_hooks:
             self._webhook_delete(item)
+
+        # add hooks
         for topic in target_topics:
             if topic not in webhooks_topics:
-                self.webhook_create(host, topic)
+                self._webhook_create(host, topic)
                 changed = True
 
+        # return all hooks
         if changed:
             return self.api_call('webhooks')
         return webhooks
 
-    def webhook_create(self, hostname, topic):
+    def _webhook_create(self, hostname, topic):
         from plugins.ShopifyIntegrationPlugin.models import ShopifyWebhook
 
         webhook = ShopifyWebhook.objects.create(name=f'{self.slug}_{topic}')
