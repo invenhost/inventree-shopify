@@ -217,6 +217,13 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         webhook.shopify_webhook_id = response['webhook'].get('id', None)
         webhook.save()
         return True
+
+    def _webhook_delete(self, id):
+        self.api_call(
+            endpoint=f'webhooks/{id}.json',
+            delete=True
+        )
+        return True
     # endregion
 
     def setup_urls(self):
