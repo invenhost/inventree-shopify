@@ -204,6 +204,12 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             'description': _('URL for your shop instance'),
             'default': 'test.myshopify.com',
         },
+        'API_SHARED_SECRET': {
+            'name': _('API Shared Secret'),
+            'description': _('API shared secret for your private apps webhooks'),
+            'default': 'a shared key',
+            'protected': True,
+        },
     }
 
     NAVIGATION = [
