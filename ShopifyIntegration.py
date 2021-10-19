@@ -44,7 +44,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             groups.append(f'{key}={",".join([str(a) for a in val])}')
         return f'?{"&".join(groups)}'
 
-    def api_call(self, name=None, endpoint=None, arguments=None, data=None, get: bool = True):
+    def api_call(self, name=None, endpoint=None, arguments=None, data=None, get: bool = True, delete: bool=False):
         if endpoint is None:
             endpoint = f'{name}.json'
         if arguments:
@@ -57,7 +57,14 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         if data:
             kwargs['data'] = json.dumps(data)
 
-        response = requests.get(**kwargs) if get else requests.post(**kwargs)
+        # run request
+        if delete:
+            response = requests.delete(**kwargs)
+        elif get:
+            response = requests.get(**kwargs)
+        else:
+            response = requests.post(**kwargs)
+
         response_data = response.json()
         if name in response_data.keys():
             return response_data[name]
