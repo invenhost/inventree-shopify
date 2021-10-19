@@ -176,9 +176,20 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         target_topics = ['inventory_levels/update']
         webhooks = self.api_call('webhooks')
 
-        webhooks_topics = [a.get('topic', '') for a in webhooks] if webhooks else []
-        host = request.get_host()
+        webhooks_topics = []
+        webhooks_wrong_hooks = []
+        for item in webhooks:
+            if host in item.get('address', ''):
+                webhooks_topics.append(item.get('topic', ''))
+            else:
+                id = item.get('id', None)
+                if id:
+                    webhooks_wrong_hooks.append(id)
         changed = False
+
+        # delete hooks
+        for item in webhooks_wrong_hooks:
+            self._webhook_delete(item)
         for topic in target_topics:
             if topic not in webhooks_topics:
                 self.webhook_create(host, topic)
