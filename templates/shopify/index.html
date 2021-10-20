@@ -11,7 +11,12 @@
         <p class="card-text"><small class="text-muted">{{p.vendor}} - {{p.product_type}}</small></p>
         <p class="card-text">{{p.body_html}}</p>
         <p>{% for var in p.variants.all %}
-           {{var.title}}({{var.sku}}) - {{var.price}}<br>
+           {{var.title}}({{var.sku}}) - {{var.price}}
+           {% if var.part %}
+           -> <a href="{% url 'part-detail' var.part.pk %}">{{var.part}}</a>
+           {% endif %}
+           <a href="{% url 'admin:ShopifyIntegrationPlugin_variant_change' var.pk %}" title="{% trans 'Admin' %}"><span class="fas fa-user"></span></a>
+           <br>
            {% endfor %}
         </p>
         <p class="card-text"><small class="text-muted">{% blocktrans with by=p.vendor typ=p.product_type %}by {{by}} - in the category {{typ}}{% endblocktrans %}</small></p>
@@ -23,7 +28,11 @@
 <ul>
     {% for l in levels %}
     <li>
-        <a href="{% url 'plugin:shopify:increase-level' l.location_id l.variant.inventory_item_id %}">{{l.variant.title}}({{l.variant.product.title}}): {{l.available}}</a>
+        <a href="{% url 'plugin:shopify:increase-level' l.location_id l.variant.inventory_item_id %}">{{l.variant.title}}({{l.variant.product.title}}): {{l.available}} {% trans 'pieces' %}</a>
+        {% if l.stock_item %}
+        -> <a href="{% url 'stock-item-detail' l.stock_item.pk %}">{{l.stock_item}}</a>
+        {% endif %}
+        <a href="{% url 'admin:ShopifyIntegrationPlugin_inventorylevel_change' l.pk %}" title="{% trans 'Admin' %}"><span class="fas fa-user"></span></a>
     </li>
     {% endfor %}
 </ul>
