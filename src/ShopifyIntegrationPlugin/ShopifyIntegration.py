@@ -23,7 +23,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     """
     AUTHOR = version_file['author']
     PUBLISH_DATE = version_file['date']
-    VERSION = version_file['version']
+    # VERSION = version_file['version']
     WEBSITE = version_file['website']
 
     PLUGIN_NAME = version_file['name']
