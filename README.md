@@ -4,7 +4,7 @@ This is a first sample implementation for the new IntegrationPlugins for [https:
 
 ## Installation
 
-1. Navigate to your InvenTree directory and cd into `src/InvenTree/plugins` and execute `git submodule add https://github.com/matmair/ShopifyIntegrationPlugin` there. Enable plugins in the general plugin settings and reload InvenTree.
+1. Make sure your instance is running the [plugin branch](https://github.com/inventree/InvenTree/pull/2074) and install this plugin via pip into the same enviroment.
 2. Add a private app to your Shopify store (please register as a dev and use a development store. This is a PoC)
 3. Go to the InvenTree settings and fill in the settings for the ShopifyIntegrationPlugin from your new private app.
 4. Check out the new navigation tab.
