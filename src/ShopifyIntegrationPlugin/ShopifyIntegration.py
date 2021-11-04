@@ -3,6 +3,7 @@ import requests
 import json
 import datetime
 import yaml
+import os
 
 from django.utils.translation import ugettext_lazy as _
 from django.conf.urls import url
@@ -11,7 +12,8 @@ from django import forms
 
 from plugin.integration import AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, IntegrationPluginBase
 
-with open("version.yml", "r", encoding="utf-8") as fh:
+version_path = os.path.join(os.path.dirname(__file__), 'version.yaml')
+with open(version_path, "r", encoding="utf-8") as fh:
     version_file = yaml.load(fh, Loader=yaml.FullLoader)
 
 
