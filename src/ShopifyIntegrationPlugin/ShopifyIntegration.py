@@ -2,6 +2,7 @@
 import requests
 import json
 import datetime
+import yaml
 
 from django.utils.translation import ugettext_lazy as _
 from django.conf.urls import url
@@ -10,18 +11,21 @@ from django import forms
 
 from plugin.integration import AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, IntegrationPluginBase
 
+with open("version.yml", "r", encoding="utf-8") as fh:
+    version_file = yaml.load(fh, Loader=yaml.FullLoader)
+
 
 class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, IntegrationPluginBase):
     """
     Sample integration plugin for shopify
     """
-    AUTHOR = "Matthias J Mair"
-    PUBLISH_DATE = "1212-12-12"
-    VERSION = "0.0.1"
-    WEBSITE = "https://github.com/matmair/ShopifyIntegrationPlugin"
+    AUTHOR = version_file['author']
+    PUBLISH_DATE = version_file['date']
+    VERSION = version_file['version']
+    WEBSITE = version_file['website']
 
-    PLUGIN_NAME = "ShopifyIntegrationPlugin"
-    PLUGIN_SLUG = "shopify"
+    PLUGIN_NAME = version_file['name']
+    PLUGIN_SLUG = version_file['slug']
     PLUGIN_TITLE = "Shopify App"
 
     NAVIGATION_TAB_NAME = "Shopify"
@@ -164,7 +168,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
 
         context['form'] = form
         return render(request, 'shopify/increase.html', context)
-    
+
     def view_webhooks(self, request):
         context = {
             'webhooks': self._webhook_check(request.get_host())
