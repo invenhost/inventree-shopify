@@ -6,7 +6,7 @@ import json
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from plugins.ShopifyIntegrationPlugin.ShopifyIntegration import ShopifyIntegrationPlugin
+from .ShopifyIntegration import ShopifyIntegrationPlugin
 from common.models import WebhookEndpoint, VerificationMethod, WebhookMessage
 from InvenTree.status_codes import StockHistoryCode
 

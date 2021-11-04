@@ -70,7 +70,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         return response_data
 
     def _fetch_levels(self):
-        from plugins.ShopifyIntegrationPlugin.models import Variant, InventoryLevel
+        from .models import Variant, InventoryLevel
 
         levels = self.api_call('inventory_levels', arguments={'inventory_item_ids': [a.inventory_item_id for a in Variant.objects.all()]})
         # create levels in db
@@ -87,7 +87,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             lvl.save()
 
     def _fetch_products(self):
-        from plugins.ShopifyIntegrationPlugin.models import Product, Variant
+        from .models import Product, Variant
 
         products = self.api_call('products')
         # create products in db
@@ -124,7 +124,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     # region views
     def view_index(self, request):
         """a basic overview"""
-        from plugins.ShopifyIntegrationPlugin.models import Product, InventoryLevel
+        from .models import Product, InventoryLevel
 
         self._fetch_products()
         self._fetch_levels()
@@ -208,7 +208,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         return webhooks
 
     def _webhook_create(self, hostname, topic):
-        from plugins.ShopifyIntegrationPlugin.models import ShopifyWebhook
+        from .models import ShopifyWebhook
 
         webhook = ShopifyWebhook.objects.create(name=f'{self.slug}_{topic}')
         response = self.api_call(
