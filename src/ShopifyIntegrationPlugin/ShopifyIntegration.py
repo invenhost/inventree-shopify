@@ -12,7 +12,7 @@ from django import forms
 
 from plugin.integration import AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, IntegrationPluginBase
 
-version_path = os.path.join(os.path.dirname(__file__), 'version.yaml')
+version_path = os.path.join(os.path.dirname(__file__), 'version.yml')
 with open(version_path, "r", encoding="utf-8") as fh:
     version_file = yaml.load(fh, Loader=yaml.FullLoader)
 
