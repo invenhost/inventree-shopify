@@ -27,3 +27,9 @@ Feel free to submit issues or just send me a mail to dev AT mjmair.com
 ## No open source?
 
 Currently I have defined no license so forking is a bad idea copyright-wise. This code should not be used as basis for anything - I will define a license once the plugin system gets released.
+
+
+## Built and ship
+1. Ammend version.yml
+2. 'python3 -m build'
+3. 'python3 -m twine upload --repository testpypi dist/*'
