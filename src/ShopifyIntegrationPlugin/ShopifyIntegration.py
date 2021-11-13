@@ -78,6 +78,8 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         from .models import Variant, InventoryLevel
 
         levels = self.api_call('inventory_levels', arguments={'inventory_item_ids': [a.inventory_item_id for a in Variant.objects.all()]})
+        if 'errors' in levels:
+            raise ValueError('Errors where found', levels['errors'])
         # create levels in db
         for level in levels:
             lvl, _ = InventoryLevel.objects.get_or_create(
@@ -95,6 +97,8 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         from .models import Product, Variant
 
         products = self.api_call('products')
+        if 'errors' in products:
+            raise ValueError('Errors where found', products['errors'])
         # create products in db
         for product in products:
             Product.objects.update_or_create(
