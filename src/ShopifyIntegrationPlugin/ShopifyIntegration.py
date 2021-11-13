@@ -1,4 +1,5 @@
 """sample implementations for IntegrationPlugin"""
+from django.http.response import Http404
 import requests
 import json
 import datetime
@@ -135,8 +136,11 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
         """a basic overview"""
         from .models import Product, InventoryLevel
 
-        self._fetch_products()
-        self._fetch_levels()
+        try:
+            self._fetch_products()
+            self._fetch_levels()
+        except ValueError:
+            raise Http404(_('Plugin is not configured correctly'))
 
         context = {
             'products': Product.objects.all(),
