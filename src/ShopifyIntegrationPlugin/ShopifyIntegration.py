@@ -1,6 +1,5 @@
 """sample implementations for IntegrationPlugin"""
 from django.http.response import Http404
-from django.urls.base import reverse
 import requests
 import json
 import datetime
@@ -142,7 +141,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             self._fetch_levels()
         except ValueError:
             if request.user.is_superuser:
-                return redirect(reverse('settings') + '#select-plugin-shopify')
+                return redirect(self.settings_url)
             raise Http404(_('Plugin is not configured correctly'))
 
         context = {
