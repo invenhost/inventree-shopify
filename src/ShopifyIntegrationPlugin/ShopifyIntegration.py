@@ -11,7 +11,9 @@ from django.conf.urls import url
 from django.shortcuts import redirect, render
 from django import forms
 
-from plugin.integration import AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, IntegrationPluginBase
+from plugin.integration import IntegrationPluginBase
+from plugin.builtin.integration.mixins import AppMixin, GlobalSettingsMixin, UrlsMixin, NavigationMixin
+
 
 version_path = os.path.join(os.path.dirname(__file__), 'version.yml')
 with open(version_path, "r", encoding="utf-8") as fh:
