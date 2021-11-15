@@ -20,7 +20,7 @@ with open(version_path, "r", encoding="utf-8") as fh:
     version_file = yaml.load(fh, Loader=yaml.FullLoader)
 
 
-class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, IntegrationPluginBase):
+class ShopifyIntegrationPlugin(AppMixin, GlobalSettingsMixin, UrlsMixin, NavigationMixin, IntegrationPluginBase):
     """
     Sample integration plugin for shopify
     """
@@ -39,11 +39,11 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
 
     @property
     def endpoint_url(self):
-        return f'https://{self.get_setting("SHOP_URL")}/admin/api/{self.SHOPIFY_API_VERSION}'
+        return f'https://{self.get_globalsetting("SHOP_URL")}/admin/api/{self.SHOPIFY_API_VERSION}'
 
     @property
     def api_headers(self):
-        return {'X-Shopify-Access-Token': self.get_setting("API_PASSWORD"), 'Content-Type': 'application/json'}
+        return {'X-Shopify-Access-Token': self.get_globalsetting("API_PASSWORD"), 'Content-Type': 'application/json'}
 
     def build_url_args(self, arguments):
         groups = []
@@ -258,7 +258,7 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
             url(r'^', self.view_index, name='index'),
         ]
 
-    SETTINGS = {
+    GLOBALSETTINGS = {
         'API_KEY': {
             'name': _('API Key'),
             'description': _('API key for your private app'),
