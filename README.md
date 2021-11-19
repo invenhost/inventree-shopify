@@ -1,5 +1,7 @@
 # ShopifyIntegrationPlugin
 
+**THIS PLUGIN IS CURRENTLY BROKEN AS THE PLUGIN PR IS BEEING REFACTORED**
+
 This is a first sample implementation for the new IntegrationPlugins for [https://github.com/inventree/InvenTree/](InvenTree).
 
 ## Installation
