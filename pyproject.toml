@@ -7,6 +7,7 @@ name = "ShopifyIntegrationPlugin"
 version =  "0.0.3"
 description="Shopify integration for InvenTree"
 readme = "README.md"
+license = {text = "MIT"}
 keywords = ["inventree", "inventree-plugin", "shopify"]
 authors = [
     {name = "Matthias J Mair", email =  "info@mjmair.com"}
