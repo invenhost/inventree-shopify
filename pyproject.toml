@@ -1,3 +1,39 @@
 [build-system]
 requires = ["setuptools", "wheel", "pyyaml"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "ShopifyIntegrationPlugin"
+version =  "0.0.3"
+description="Shopify integration for InvenTree"
+readme = "README.md"
+keywords = ["inventree", "inventree-plugin", "shopify"]
+authors = [
+    {name = "Matthias J Mair", email =  "info@mjmair.com"}
+]
+classifiers=[
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",  # Remove after final released
+    "Environment :: Plugins",
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Manufacturing",
+    "Intended Audience :: End Users/Desktop",
+    "Topic :: Scientific/Engineering",
+]
+requires-python=">=3.6"
+dependencies =['requests', 'django', 'toml']
+
+[project.optional-dependencies]
+dev = ['twine', 'setuptools']
+
+[project.urls]
+repository = "https://github.com/matmair/ShopifyIntegrationPlugin"
+"Bug Tracker" = "https://github.com/matmair/ShopifyIntegrationPlugin/issues"
+
+[project.entry-points."inventree_plugins"]
+ShopifyIntegrationPlugin = "ShopifyIntegrationPlugin.ShopifyIntegration:ShopifyIntegrationPlugin"
+
+[tool.setuptools.packages.find]
+where = ["src"]

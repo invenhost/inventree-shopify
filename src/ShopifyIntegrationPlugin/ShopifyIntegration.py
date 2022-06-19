@@ -1,10 +1,9 @@
 """sample implementations for IntegrationPlugin"""
 from django.http.response import Http404
 import requests
+import toml
 import json
 import datetime
-import yaml
-import os
 
 from django.utils.translation import ugettext_lazy as _
 from django.conf.urls import url
@@ -15,10 +14,7 @@ from plugin.integration import IntegrationPluginBase
 from plugin.builtin.integration.mixins import AppMixin, GlobalSettingsMixin, UrlsMixin, NavigationMixin
 
 
-version_path = os.path.join(os.path.dirname(__file__), 'version.yml')
-with open(version_path, "r", encoding="utf-8") as fh:
-    version_file = yaml.load(fh, Loader=yaml.FullLoader)
-
+version_file = toml.load('../../pyproject.toml')
 
 class ShopifyIntegrationPlugin(AppMixin, GlobalSettingsMixin, UrlsMixin, NavigationMixin, IntegrationPluginBase):
     """
