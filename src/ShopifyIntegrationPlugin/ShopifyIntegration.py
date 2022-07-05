@@ -214,7 +214,7 @@ class ShopifyIntegrationPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin,
             url(r'^', self.view_index, name='index'),
         ]
 
-    GLOBALSETTINGS = {
+    SETTINGS = {
         'API_KEY': {
             'name': _('API Key'),
             'description': _('API key for your private app'),
