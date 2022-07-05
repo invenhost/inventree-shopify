@@ -1,7 +1,7 @@
-"""sample implementations for IntegrationPlugin"""
+"""Plugin to integrate InvenTree with Shopify."""
+
 from django.http.response import Http404
 import requests
-import toml
 import json
 import datetime
 
@@ -10,23 +10,16 @@ from django.conf.urls import url
 from django.shortcuts import redirect, render
 from django import forms
 
-from plugin.integration import IntegrationPluginBase
-from plugin.builtin.integration.mixins import AppMixin, GlobalSettingsMixin, UrlsMixin, NavigationMixin
+from plugin import InvenTreePlugin
+from plugin.mixins import AppMixin, SettingsMixin, UrlsMixin, NavigationMixin
 
 
-version_file = toml.load('../../pyproject.toml')
+class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, InvenTreePlugin):
+    """Main plugin class for Shopify integration."""
 
-class ShopifyIntegrationPlugin(AppMixin, GlobalSettingsMixin, UrlsMixin, NavigationMixin, IntegrationPluginBase):
-    """
-    Sample integration plugin for shopify
-    """
-    AUTHOR = version_file['author']
-    VERSION = version_file['version']
-    WEBSITE = version_file['website']
-
-    PLUGIN_NAME = version_file['name']
-    PLUGIN_SLUG = version_file['slug']
-    PLUGIN_TITLE = "Shopify App"
+    NAME = 'ShopifyIntegrationPlugin'
+    SLUG = 'shopify'
+    TITLE = "Shopify App"
 
     NAVIGATION_TAB_NAME = "Shopify"
     NAVIGATION_TAB_ICON = 'fab fa-shopify'
@@ -47,7 +40,7 @@ class ShopifyIntegrationPlugin(AppMixin, GlobalSettingsMixin, UrlsMixin, Navigat
             groups.append(f'{key}={",".join([str(a) for a in val])}')
         return f'?{"&".join(groups)}'
 
-    def api_call(self, name=None, endpoint=None, arguments=None, data=None, get: bool = True, delete: bool=False):
+    def api_call(self, name=None, endpoint=None, arguments=None, data=None, get: bool = True, delete: bool = False):
         if endpoint is None:
             endpoint = f'{name}.json'
         if arguments:
