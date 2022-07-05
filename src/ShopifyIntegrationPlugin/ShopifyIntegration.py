@@ -11,10 +11,10 @@ from django.shortcuts import redirect, render
 from django import forms
 
 from plugin import InvenTreePlugin
-from plugin.mixins import AppMixin, SettingsMixin, UrlsMixin, NavigationMixin
+from plugin.mixins import AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, APICallMixin
 
 
-class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, InvenTreePlugin):
+class ShopifyIntegrationPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, InvenTreePlugin):
     """Main plugin class for Shopify integration."""
 
     NAME = 'ShopifyIntegrationPlugin'
@@ -24,47 +24,14 @@ class ShopifyIntegrationPlugin(AppMixin, SettingsMixin, UrlsMixin, NavigationMix
     NAVIGATION_TAB_NAME = "Shopify"
     NAVIGATION_TAB_ICON = 'fab fa-shopify'
 
+    API_TOKEN = 'X-Shopify-Access-Token'
+    API_TOKEN_SETTING = 'API_PASSWORD'
+
     SHOPIFY_API_VERSION = '2021-07'
 
     @property
-    def endpoint_url(self):
-        return f'https://{self.get_globalsetting("SHOP_URL")}/admin/api/{self.SHOPIFY_API_VERSION}'
-
-    @property
-    def api_headers(self):
-        return {'X-Shopify-Access-Token': self.get_globalsetting("API_PASSWORD"), 'Content-Type': 'application/json'}
-
-    def build_url_args(self, arguments):
-        groups = []
-        for key, val in arguments.items():
-            groups.append(f'{key}={",".join([str(a) for a in val])}')
-        return f'?{"&".join(groups)}'
-
-    def api_call(self, name=None, endpoint=None, arguments=None, data=None, get: bool = True, delete: bool = False):
-        if endpoint is None:
-            endpoint = f'{name}.json'
-        if arguments:
-            endpoint += self.build_url_args(arguments)
-
-        kwargs = {
-            'url': f'{self.endpoint_url}/{endpoint}',
-            'headers': self.api_headers,
-        }
-        if data:
-            kwargs['data'] = json.dumps(data)
-
-        # run request
-        if delete:
-            response = requests.delete(**kwargs)
-        elif get:
-            response = requests.get(**kwargs)
-        else:
-            response = requests.post(**kwargs)
-
-        response_data = response.json()
-        if name in response_data.keys():
-            return response_data[name]
-        return response_data
+    def api_url(self):
+        return f'https://{self.get_setting("SHOP_URL")}/admin/api/{self.SHOPIFY_API_VERSION}'
 
     def _fetch_levels(self):
         from .models import Variant, InventoryLevel
