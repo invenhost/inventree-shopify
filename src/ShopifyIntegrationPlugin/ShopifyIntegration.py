@@ -99,6 +99,7 @@ class ShopifyIntegrationPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin,
             self._fetch_levels()
         except ValueError:
             if request.user.is_superuser:
+                # TODO @matmair send a notification to superusers to fix setup
                 return redirect(self.settings_url)
             raise Http404(_('Plugin is not configured correctly'))
 
