@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block breadcrumb_list %}
+{% endblock %}
+
+{% block content %}
+<h3>Change level for {{pk}}</h3>
+{% if error %}<p>{{ error }}</p>{% endif %}
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

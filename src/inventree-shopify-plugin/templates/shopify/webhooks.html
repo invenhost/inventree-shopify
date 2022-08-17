@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block breadcrumb_list %}
+{% endblock %}
+
+{% block content %}
+<h3>{% blocktrans with lgt=webhooks|length %}{{lgt}} Webhooks:{% endblocktrans %}</h3>
+<ul>
+    {% for webhook in webhooks %}
+    <li>
+        {{webhook.topic}}:{{webhook.address}} ({{webhook.id}})
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
