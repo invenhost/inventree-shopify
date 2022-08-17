@@ -1,18 +1,16 @@
-"""
-Models for ShopifyPlugin
-"""
+"""Models for ShopifyPlugin."""
 import json
 
+from common.models import VerificationMethod, WebhookEndpoint, WebhookMessage
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from InvenTree.status_codes import StockHistoryCode
 
 from .ShopifyPlugin import ShopifyPlugin
-from common.models import WebhookEndpoint, VerificationMethod, WebhookMessage
-from InvenTree.status_codes import StockHistoryCode
 
 
 class Product(models.Model):
-    """A shopify product reference"""
+    """A shopify product reference."""
 
     id = models.IntegerField(primary_key=True, verbose_name=_('Id'))
     title = models.CharField(max_length=250, verbose_name=_('Title'))
@@ -26,7 +24,7 @@ class Product(models.Model):
 
 
 class Variant(models.Model):
-    """A shopify product variant reference"""
+    """A shopify product variant reference."""
 
     inventory_item_id = models.IntegerField(verbose_name=_('Inventory item ID'), unique=True)
     title = models.CharField(max_length=250, verbose_name=_('Title'))
@@ -51,8 +49,11 @@ class Variant(models.Model):
 
 
 class InventoryLevel(models.Model):
-    """A shopify inventory level reference"""
+    """A shopify inventory level reference."""
+
     class Meta:
+        """Meta options for model."""
+
         unique_together = ('location_id', 'variant', )
 
     available = models.IntegerField(verbose_name=_('Available'))
@@ -76,6 +77,8 @@ class InventoryLevel(models.Model):
 
 
 class ShopifyWebhook(WebhookEndpoint):
+    """Reference for Shopify specific webhook."""
+
     TOKEN_NAME = "X-Shopify-Hmac-Sha256"
     VERIFICATION_METHOD = VerificationMethod.HMAC
 
@@ -85,10 +88,12 @@ class ShopifyWebhook(WebhookEndpoint):
     )
 
     def init(self, request, *args, **kwargs):
+        """Setup for webhook handler."""
         super().init(request, *args, **kwargs)
         self.secret = ShopifyPlugin().get_setting('API_SHARED_SECRET')
 
     def process_payload(self, message, payload=None, headers=None):
+        """Process a webhook message."""
         topic = headers['X-Shopify-Topic']
         if self.check_if_handled(headers):
             return False
@@ -106,7 +111,15 @@ class ShopifyWebhook(WebhookEndpoint):
 
         return True
 
-    def check_if_handled(self, headers):
+    def check_if_handled(self, headers: dict) -> bool:
+        """Checks if the webhook messages was already handled.
+
+        Args:
+            headers (dict): Headers of message
+
+        Returns:
+            bool: True if message handled
+        """
         message_id = headers['X-Shopify-Webhook-Id']
         msgs = WebhookMessage.objects.filter(endpoint=self, header__contains=message_id, worked_on=True)
         if msgs.exists():
@@ -119,10 +132,12 @@ class ShopifyWebhook(WebhookEndpoint):
         return False
 
     def get_return(self, payload, headers=None, request=None):
+        """Shopify expects no returns."""
         return None
 
-def update_inventory_levels(payload:dict):
-    """handle updates to inventory levles
+
+def update_inventory_levels(payload: dict):
+    """Handle updates to inventory levels.
 
     :param payload: pyload of webhook
     :type payload: dict

@@ -1,17 +1,15 @@
 """Plugin to integrate InvenTree with Shopify."""
 
-from django.http.response import Http404
-import requests
-import json
 import datetime
 
-from django.utils.translation import ugettext_lazy as _
-from django.conf.urls import url
-from django.shortcuts import redirect, render
 from django import forms
-
+from django.conf.urls import url
+from django.http.response import Http404
+from django.shortcuts import redirect, render
+from django.utils.translation import ugettext_lazy as _
 from plugin import InvenTreePlugin
-from plugin.mixins import AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, APICallMixin
+from plugin.mixins import (APICallMixin, AppMixin, NavigationMixin,
+                           SettingsMixin, UrlsMixin)
 
 
 class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, InvenTreePlugin):
@@ -31,10 +29,11 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
 
     @property
     def api_url(self):
+        """Base URL definifion."""
         return f'https://{self.get_setting("SHOP_URL")}/admin/api/{self.SHOPIFY_API_VERSION}'
 
     def _fetch_levels(self):
-        from .models import Variant, InventoryLevel
+        from .models import InventoryLevel, Variant
 
         levels = self.api_call('inventory_levels', arguments={'inventory_item_ids': [a.inventory_item_id for a in Variant.objects.all()]})
         if 'errors' in levels:
@@ -91,8 +90,8 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
 
     # region views
     def view_index(self, request):
-        """a basic overview"""
-        from .models import Product, InventoryLevel
+        """A basic overview view."""
+        from .models import InventoryLevel, Product
 
         try:
             self._fetch_products()
@@ -110,7 +109,7 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
         return render(request, 'shopify/index.html', context)
 
     def view_increase(self, request, pk, location):
-        """a basic overview"""
+        """View for increasing the inventory level for an item."""
         class IncreaseForm(forms.Form):
             amount = forms.IntegerField(required=True, help_text=_('New level for this level'))
 
@@ -140,6 +139,7 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
         return render(request, 'shopify/increase.html', context)
 
     def view_webhooks(self, request):
+        """View to check if the webhooks are set up correctly."""
         context = {
             'webhooks': self._webhook_check(request.get_host())
         }
@@ -209,6 +209,7 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
     # endregion
 
     def setup_urls(self):
+        """Returns the URLs defined by this plugin."""
         return [
             url(r'increase/(?P<location>\d+)/(?P<pk>\d+)/', self.view_increase, name='increase-level'),
             url(r'webhook/', self.view_webhooks, name='webhooks'),
