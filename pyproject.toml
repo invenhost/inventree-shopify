@@ -34,7 +34,7 @@ repository = "https://github.com/matmair/inventree-shopify"
 "Bug Tracker" = "https://github.com/matmair/inventree-shopify/issues"
 
 [project.entry-points."inventree_plugins"]
-ShopifyPlugin = "inventree-shopify.ShopifyPlugin:ShopifyPlugin"
+inventree-shopify = "inventree_shopify:ShopifyPlugin.ShopifyPlugin"
 
 [tool.setuptools.packages.find]
 where = ["src"]
