@@ -1,3 +1,4 @@
+name: Plugin action
 on: [push, pull_request, release]
 
 jobs:
