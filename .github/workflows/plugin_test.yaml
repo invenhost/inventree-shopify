@@ -1,0 +1,6 @@
+on: [push, pull_request, release]
+
+jobs:
+  plugin-action:
+    uses: matmair/inventree-meta-plugin/.github/workflows/plugin_action.yaml@main
+    secrets: inherit
