@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel", "pyyaml"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "inventree-shopify-plugin"
+name = "inventree-shopify"
 version =  "0.0.3a5"
 description="Shopify integration for InvenTree"
 readme = "README.md"
@@ -30,11 +30,11 @@ dependencies = ['requests', 'django']
 dev = ['twine', 'setuptools']
 
 [project.urls]
-repository = "https://github.com/matmair/inventree-shopify-plugin"
-"Bug Tracker" = "https://github.com/matmair/inventree-shopify-plugin/issues"
+repository = "https://github.com/matmair/inventree-shopify"
+"Bug Tracker" = "https://github.com/matmair/inventree-shopify/issues"
 
 [project.entry-points."inventree_plugins"]
-ShopifyPlugin = "inventree-shopify-plugin.ShopifyPlugin:ShopifyPlugin"
+ShopifyPlugin = "inventree-shopify.ShopifyPlugin:ShopifyPlugin"
 
 [tool.setuptools.packages.find]
 where = ["src"]

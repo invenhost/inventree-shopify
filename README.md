@@ -1,4 +1,4 @@
-# inventree-shopify-plugin
+# inventree-shopify
 
 This is a first sample implementation for the new IntegrationPlugins for [InvenTree]([InvenTree](https://github.com/inventree/InvenTree/)).
 
