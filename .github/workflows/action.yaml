@@ -1,5 +1,13 @@
 name: Plugin action
-on: [push, pull_request, release]
+on:
+  push:
+    branches:
+      - 'main'
+      - 'master'
+  pull_request:
+    types: [opened, edited, reopened]
+  release:
+    types: [published]
 
 jobs:
   plugin-action:
