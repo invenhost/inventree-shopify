@@ -1,3 +1,5 @@
-from .ShopifyIntegration import ShopifyIntegrationPlugin
+"""Plugin to sync inventory with Shopify."""
 
-__all__ = [ShopifyIntegrationPlugin, ]
+from .ShopifyPlugin import ShopifyPlugin
+
+__all__ = [ShopifyPlugin, ]
