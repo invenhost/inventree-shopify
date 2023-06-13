@@ -151,6 +151,10 @@ def update_inventory_levels(payload: dict):
         # set item qty
         item.available = avail
         if item.stock_item:
+            # check if the quantity changed and skip if not
+            if item.stock_item.quantity == avail:
+                return
+
             # set stock item qty
             item.stock_item.quantity = avail
             item.stock_item.save()
