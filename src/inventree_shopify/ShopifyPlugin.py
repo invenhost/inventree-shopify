@@ -35,10 +35,11 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
     def _fetch_levels(self):
         from .models import InventoryLevel, Variant
 
-        levels = self.api_call('inventory_levels.json', arguments={'inventory_item_ids': [a.inventory_item_id for a in Variant.objects.all()]})
+        levels = self.api_call('inventory_levels.json', url_args={'inventory_item_ids': [a.inventory_item_id for a in Variant.objects.all()]})
         if 'errors' in levels:
             raise ValueError('Errors where found', levels['errors'])
         # create levels in db
+        levels = levels['inventory_levels']
         for level in levels:
             lvl, _ = InventoryLevel.objects.get_or_create(
                 variant=Variant.objects.get(inventory_item_id=level.get('inventory_item_id')),
@@ -58,6 +59,7 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
         if 'errors' in products:
             raise ValueError('Errors where found', products['errors'])
         # create products in db
+        products = products['products']
         for product in products:
             Product.objects.update_or_create(
                 id=product.get('id'),
@@ -124,12 +126,12 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
                 # increase stock
                 response = self.api_call(
                     endpoint='inventory_levels/set.json',
-                    data={
+                    json={
                         "location_id": location,
                         "inventory_item_id": pk,
                         "available": form.cleaned_data['amount']
                     },
-                    get=False
+                    method="POST",
                 )
                 if 'inventory_level' in response:
                     return redirect(f'{self.internal_name}index')
@@ -153,6 +155,7 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
             'orders/edited',
         ]
         webhooks = self.api_call('webhooks.json')
+        webhooks = webhooks.get('webhooks', [])
 
         # process current hooks
         webhooks_topics = []
@@ -187,12 +190,12 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
         webhook = ShopifyWebhook.objects.create(name=f'{self.slug}_{topic}')
         response = self.api_call(
             endpoint='webhooks.json',
-            data={"webhook": {
+            json={"webhook": {
                 "topic": topic,
                 "address": f'https://{hostname}/api/webhook/{webhook.endpoint_id}/',
                 "format": "json",
             }},
-            get=False
+            method="POST"
         )
         if not response.get('webhook', False):
             raise KeyError(response)
@@ -203,7 +206,7 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
     def _webhook_delete(self, id):
         self.api_call(
             endpoint=f'webhooks/{id}.json',
-            delete=True
+            method="DELETE",
         )
         return True
     # endregion
