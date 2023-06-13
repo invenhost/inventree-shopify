@@ -98,6 +98,8 @@ class ShopifyPlugin(EventMixin, APICallMixin, AppMixin, SettingsMixin, UrlsMixin
             try:
                 stockitems = StockItem.objects.get(pk=kwargs.get('id'))
                 for level in stockitems.ShopifyInventoryLevel.all():
+                    if level.available == stockitems.quantity:
+                        continue
                     response = self.api_call(
                         endpoint='inventory_levels/set.json',
                         json={
