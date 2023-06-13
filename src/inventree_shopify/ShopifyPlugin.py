@@ -25,7 +25,7 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
     API_TOKEN = 'X-Shopify-Access-Token'
     API_TOKEN_SETTING = 'API_PASSWORD'
 
-    SHOPIFY_API_VERSION = '2021-07'
+    SHOPIFY_API_VERSION = '2023-04'
 
     @property
     def api_url(self):
@@ -35,7 +35,7 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
     def _fetch_levels(self):
         from .models import InventoryLevel, Variant
 
-        levels = self.api_call('inventory_levels', arguments={'inventory_item_ids': [a.inventory_item_id for a in Variant.objects.all()]})
+        levels = self.api_call('inventory_levels.json', arguments={'inventory_item_ids': [a.inventory_item_id for a in Variant.objects.all()]})
         if 'errors' in levels:
             raise ValueError('Errors where found', levels['errors'])
         # create levels in db
@@ -54,7 +54,7 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
     def _fetch_products(self):
         from .models import Product, Variant
 
-        products = self.api_call('products')
+        products = self.api_call('products.json')
         if 'errors' in products:
             raise ValueError('Errors where found', products['errors'])
         # create products in db
@@ -152,7 +152,7 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
             'orders/updated',
             'orders/edited',
         ]
-        webhooks = self.api_call('webhooks')
+        webhooks = self.api_call('webhooks.json')
 
         # process current hooks
         webhooks_topics = []
@@ -178,7 +178,7 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
 
         # return all hooks
         if changed:
-            return self.api_call('webhooks')
+            return self.api_call('webhooks.json')
         return webhooks
 
     def _webhook_create(self, hostname, topic):
