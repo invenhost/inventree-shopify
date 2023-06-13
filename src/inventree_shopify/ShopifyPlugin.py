@@ -8,11 +8,12 @@ from django.http.response import Http404
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext_lazy as _
 from plugin import InvenTreePlugin
-from plugin.mixins import (APICallMixin, AppMixin, NavigationMixin,
+from plugin.mixins import (APICallMixin, AppMixin, EventMixin, NavigationMixin,
                            SettingsMixin, UrlsMixin)
+from stock.models import StockItem
 
 
-class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, InvenTreePlugin):
+class ShopifyPlugin(EventMixin, APICallMixin, AppMixin, SettingsMixin, UrlsMixin, NavigationMixin, InvenTreePlugin):
     """Main plugin class for Shopify integration."""
 
     NAME = 'ShopifyPlugin'
@@ -89,6 +90,30 @@ class ShopifyPlugin(APICallMixin, AppMixin, SettingsMixin, UrlsMixin, Navigation
                         updated_at=datetime.datetime.fromisoformat(var.get('updated_at')),
                         product_id=p.get('id'),
                     )
+
+    # region events
+    def process_event(self, event, *args, **kwargs):
+        """Process triggered events."""
+        if event == 'stock_stockitem.saved' and kwargs.get('model', '') == 'StockItem':
+            try:
+                stockitems = StockItem.objects.get(pk=kwargs.get('id'))
+                for level in stockitems.ShopifyInventoryLevel.all():
+                    response = self.api_call(
+                        endpoint='inventory_levels/set.json',
+                        json={
+                            "location_id": level.location_id,
+                            "inventory_item_id": level.variant.inventory_item_id,
+                            "available": int(stockitems.quantity),
+                        },
+                        method="POST",
+                    )
+                    if 'inventory_level' in response:
+                        level.available = stockitems.quantity
+                        level.save()
+
+            except StockItem.DoesNotExist:
+                pass
+    # endregion
 
     # region views
     def view_index(self, request):
