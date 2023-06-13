@@ -139,7 +139,7 @@ class ShopifyWebhook(WebhookEndpoint):
 def update_inventory_levels(payload: dict):
     """Handle updates to inventory levels.
 
-    :param payload: pyload of webhook
+    :param payload: payload of webhook
     :type payload: dict
     """
     # fetch item
