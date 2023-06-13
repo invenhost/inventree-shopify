@@ -5,36 +5,41 @@
 {% endblock %}
 
 {% block content %}
-<h3>{% blocktrans with lgt=products|length %}{{lgt}} Products:{% endblocktrans %}</h3>
+<h3>{% blocktrans with lgt=products|length %}{{lgt}} Products in Shopify:{% endblocktrans %}</h3>
 <div class="card-group">
     {% for p in products %}
     <div class="card">
         <h5 class="card-title">{{p.title}}</h5>
-        <p class="card-text"><small class="text-muted">{{p.vendor}} - {{p.product_type}}</small></p>
-        <p class="card-text">{{p.body_html}}</p>
-        <p>{% for var in p.variants.all %}
-           {{var.title}}({{var.sku}}) - {{var.price}}
+        <p class="card-text mb-0"><small class="text-muted">Vendor:</small>{{p.vendor}}<small class="text-muted"> | Type:</small>{{p.product_type}}<br>
+        {{p.body_html}}<br>
+        <small class="text-muted">Variants (Shopify -> InvenTree):</small><br>
+        </p>
+        <ol class="p-0">
+        {% for var in p.variants.all %}
+            <ul>
+           {{var.title}}(<small class="text-muted">SKU: </small>{{var.sku}}<small class="text-muted"> Price: </small>{{var.price}})
            {% if var.part %}
            -> <a href="{% url 'part-detail' var.part.pk %}">{{var.part}}</a>
            {% endif %}
-           <a href="{% url 'admin:ShopifyIntegrationPlugin_variant_change' var.pk %}" title="{% trans 'Admin' %}"><span class="fas fa-user"></span></a>
-           <br>
+           <a href="{% url 'admin:inventree_shopify_variant_change' var.pk %}" title="{% trans 'Admin' %}"><span class="fas fa-user"></span></a>
+            </ul>
            {% endfor %}
-        </p>
-        <p class="card-text"><small class="text-muted">{% blocktrans with by=p.vendor typ=p.product_type %}by {{by}} - in the category {{typ}}{% endblocktrans %}</small></p>
+        </ol>
       </div>
     {% endfor %}
 </div>
 
 <h3>{% blocktrans with lgt=levels|length %}{{lgt}} Inventory-Levels:{% endblocktrans %}</h3>
+<p>This shows the Shopify inventoy items on the left and linked stock items on the right. Click on the admin icon to link an InvenTree stock item with a Shopify inventory item.<br>
+Once items are linked, the Shopify inventory item levels will automatically synced to InvenTree via webhooks. Changes to the InvenTree stock item will be pushed to Shopify.
+</p>
 <ul>
     {% for l in levels %}
     <li>
         <a href="{% url 'plugin:shopify:increase-level' l.location_id l.variant.inventory_item_id %}">{{l.variant.title}}({{l.variant.product.title}}): {{l.available}} {% trans 'pieces' %}</a>
-        {% if l.stock_item %}
-        -> <a href="{% url 'stock-item-detail' l.stock_item.pk %}">{{l.stock_item}}</a>
-        {% endif %}
-        <a href="{% url 'admin:ShopifyIntegrationPlugin_inventorylevel_change' l.pk %}" title="{% trans 'Admin' %}"><span class="fas fa-user"></span></a>
+        ->
+        {% if l.stock_item %} <a href="{% url 'stock-item-detail' l.stock_item.pk %}">{{l.stock_item}}</a>{% else %} Not linked{% endif %}
+        <a href="{% url 'admin:inventree_shopify_inventorylevel_change' l.pk %}" title="{% trans 'Admin' %}"><span class="fas fa-user"></span></a>
     </li>
     {% endfor %}
 </ul>

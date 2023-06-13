@@ -1,13 +1,18 @@
 # inventree-shopify
 
-This is a first sample implementation for the new IntegrationPlugins for [InvenTree]([InvenTree](https://github.com/inventree/InvenTree/)).
+Integrate your [InvenTree](https://inventree.org) instance stock with [Shopify](https://www.shopify.com/).
+
+## Features
+
+Sync changes between Shopify inventory levels (nventory per location) and InvenTree stock items. Only supports non-serialized InvenTree stock items at the moment.
 
 ## Installation
 
-1. Make sure plugins are activated and install this plugin via pip into the same enviroment.
-2. Add a private app to your Shopify store (please register as a dev and use a development store. This is a PoC - not for production stores)
-3. Go to the InvenTree settings and fill in the settings for the plugin from your new private app.
-4. Check out the new navigation tab.
+1. Install in your instance via [pip install method](https://docs.inventree.org/en/latest/extend/plugins/install/?h=plugin#plugin-installation-file-pip).
+2. Add a private app to your Shopify store.
+3. Go to the inventree-shopify settings in InvenTree and fill in the settings for the plugin from your new private app.
+4. Click the webhooks link in the settings - make sure your instance is reachable for shopify.
+5. Open the Shopify plane in InvenTree. You can now link your Shopify inventroy levels to your InvenTree stock items.
 
 ## Caveat
 
@@ -16,17 +21,14 @@ Open your instance on that URL for the first setup.
 
 ## State of the code
 
-This code is currently in the PoC phase. While it works it only provides simpel features - I am open for suggestions.
+This code is only running on a few instances with rarely used Shopify stores (maybe 40-50 inventory shifts a month). It is not tested with a lot of inventory shifts and it is not tested with a lot of different Shopify stores. So use it at your own risk.
+
+If you use this more extensively please let me know so I can remove this warning.
 
 ## Contribute
 
-Feel free to submit issues or just send me a mail to code AT mjmair DOT com
-
-## Built and ship
-1. Ammend version in pyproject.toml
-2. 'python3 -m build'
-3. 'python3 -m twine upload --repository testpypi dist/*'
+Feel free to submit issues or feature requests here or just send me a mail to code AT mjmair DOT com
 
 ## License
 
-This code is licensed under MIT.
+This code is licensed under MIT. I persume no liability for any damages and do not provide any warranty.

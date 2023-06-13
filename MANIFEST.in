@@ -1,4 +1,4 @@
 include LICENSE
 include README.md
-recursive-include src/ShopifyIntegrationPlugin/static *
-recursive-include src/ShopifyIntegrationPlugin/templates *
+recursive-include src/inventree_shopify/static *
+recursive-include src/inventree_shopify/templates *

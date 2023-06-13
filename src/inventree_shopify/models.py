@@ -101,13 +101,13 @@ class ShopifyWebhook(WebhookEndpoint):
         if topic == 'inventory_levels/update':
             # handle invetorylevel update
             update_inventory_levels(payload)
-        elif topic == 'orders/edited':
-            # handle order edited
-            pass
+        # elif topic == 'orders/edited':
+        #     # handle order edited
+        #     pass
 
-        elif topic == 'orders/updated':
-            # handle order update
-            pass
+        # elif topic == 'orders/updated':
+        #     # handle order update
+        #     pass
 
         return True
 
@@ -139,7 +139,7 @@ class ShopifyWebhook(WebhookEndpoint):
 def update_inventory_levels(payload: dict):
     """Handle updates to inventory levels.
 
-    :param payload: pyload of webhook
+    :param payload: payload of webhook
     :type payload: dict
     """
     # fetch item
@@ -151,6 +151,10 @@ def update_inventory_levels(payload: dict):
         # set item qty
         item.available = avail
         if item.stock_item:
+            # check if the quantity changed and skip if not
+            if item.stock_item.quantity == avail:
+                return
+
             # set stock item qty
             item.stock_item.quantity = avail
             item.stock_item.save()

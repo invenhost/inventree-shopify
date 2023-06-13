@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "inventree-shopify"
-version =  "0.0.4a4"
+version =  "1.0.0"
 description="Shopify integration for InvenTree"
 readme = "README.md"
 license = {text = "MIT"}
@@ -15,7 +15,7 @@ authors = [
 classifiers=[
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
-    "Development Status :: 4 - Beta",  # Remove after final released
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Plugins",
     "Framework :: Django",
     "Intended Audience :: Developers",
@@ -23,7 +23,7 @@ classifiers=[
     "Intended Audience :: End Users/Desktop",
     "Topic :: Scientific/Engineering",
 ]
-requires-python=">=3.6"
+requires-python=">=3.9"
 dependencies = ['requests', 'django']
 
 [project.optional-dependencies]
@@ -34,7 +34,7 @@ repository = "https://github.com/matmair/inventree-shopify"
 "Bug Tracker" = "https://github.com/matmair/inventree-shopify/issues"
 
 [project.entry-points."inventree_plugins"]
-inventree-shopify = "inventree_shopify:ShopifyPlugin.ShopifyPlugin"
+inventree-shopify = "inventree_shopify:ShopifyPlugin"
 
 [tool.setuptools.packages.find]
 where = ["src"]
