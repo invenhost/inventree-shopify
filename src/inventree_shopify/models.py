@@ -101,13 +101,13 @@ class ShopifyWebhook(WebhookEndpoint):
         if topic == 'inventory_levels/update':
             # handle invetorylevel update
             update_inventory_levels(payload)
-        elif topic == 'orders/edited':
-            # handle order edited
-            pass
+        # elif topic == 'orders/edited':
+        #     # handle order edited
+        #     pass
 
-        elif topic == 'orders/updated':
-            # handle order update
-            pass
+        # elif topic == 'orders/updated':
+        #     # handle order update
+        #     pass
 
         return True
 

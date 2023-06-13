@@ -176,8 +176,8 @@ class ShopifyPlugin(EventMixin, APICallMixin, AppMixin, SettingsMixin, UrlsMixin
         # collect current hooks
         target_topics = [
             'inventory_levels/update',
-            'orders/updated',
-            'orders/edited',
+            # 'orders/updated',
+            # 'orders/edited',
         ]
         webhooks = self.api_call('webhooks.json')
         webhooks = webhooks.get('webhooks', [])
