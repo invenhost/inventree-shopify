@@ -31,7 +31,7 @@
 
 <h3>{% blocktrans with lgt=levels|length %}{{lgt}} Inventory-Levels:{% endblocktrans %}</h3>
 <p>This shows the Shopify inventoy items on the left and linked stock items on the right. Click on the admin icon to link an InvenTree stock item with a Shopify inventory item.<br>
-Once items are linked, the Shopify inventory item levels will automatically be updated when changed from orders or manual adjustmens via webhooks. Changes to the InvenTree stock item will be updated on Shopify.
+Once items are linked, the Shopify inventory item levels will automatically synced to InvenTree via webhooks. Changes to the InvenTree stock item will be pushed to Shopify.
 </p>
 <ul>
     {% for l in levels %}
