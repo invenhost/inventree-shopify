@@ -2,4 +2,6 @@
 
 from .ShopifyPlugin import ShopifyPlugin
 
-__all__ = [ShopifyPlugin, ]
+__all__ = [
+    ShopifyPlugin,
+]

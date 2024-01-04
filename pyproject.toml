@@ -10,7 +10,7 @@ readme = "README.md"
 license = {text = "MIT"}
 keywords = ["inventree", "inventree-plugin", "shopify"]
 authors = [
-    {name = "Matthias J Mair", email =  "info@mjmair.com"}
+    {name = "Matthias Mair", email =  "code@mjmair.com"}
 ]
 classifiers=[
     "Programming Language :: Python :: 3",
@@ -30,11 +30,29 @@ dependencies = ['requests', 'django']
 dev = ['twine', 'setuptools']
 
 [project.urls]
-repository = "https://github.com/matmair/inventree-shopify"
-"Bug Tracker" = "https://github.com/matmair/inventree-shopify/issues"
+"Repository" = "https://github.com/invenhost/inventree-shopify"
+"Bug Tracker" = "https://github.com/invenhost/inventree-shopify/issues"
 
 [project.entry-points."inventree_plugins"]
 inventree-shopify = "inventree_shopify:ShopifyPlugin"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.ruff]
+exclude=[".git","__pycache__","dist","build","test.py","tests", "venv","env",".venv",".env"]
+
+[tool.ruff.lint]
+select = ["A", "B", "C4", "D", "DJ", "N", "I","S"]
+ignore = ["N999", ]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+section-order = ["future", "standard-library", "django", "third-party", "first-party", "local-folder" ]
+known-first-party = ["src", "plugin", "InvenTree", "common"]
+
+[tool.ruff.lint.isort.sections]
+"django" = ["django"]
